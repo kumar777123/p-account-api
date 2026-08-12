@@ -1,0 +1,44 @@
+[
+  {
+    "name": "STG Technologies Pvt Ltd",
+    "addressDetails": [
+      {
+        "address": {
+          "telephone": "+1 9724846465",
+          "street": "Plano",
+          "city": "Texas",
+          "state": "Texas",
+          "postalCode": "73301",
+          "country": "United States",
+          "isActive": true
+        }
+      },
+      {
+        "address": {
+          "telephone": "+1 7724846465",
+          "street": "Alano",
+          "city": "Texas",
+          "state": "Texas",
+          "postalCode": "73301",
+          "country": "United States"
+        }
+      }
+    ]
+  },
+  {
+    "name": "AST Technologies Pvt Ltd",
+    "addressDetails": [
+      {
+        "address": {
+          "telephone": "+1 9724846465",
+          "street": "Plano",
+          "city": "Texas",
+          "state": "Texas",
+          "postalCode": "73301",
+          "country": "United States",
+          "isActive": false
+        }
+      }
+    ]
+  }
+]

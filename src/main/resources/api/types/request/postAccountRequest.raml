@@ -1,0 +1,41 @@
+#%RAML 1.0 DataType
+description: creatye reuest fior Account
+
+type: array
+items:
+  type: object
+  properties:
+    name: 
+     type: string
+     required: true
+    addressDetails:
+      type: array
+      required: true
+      items:
+       type: object
+       properties:
+         address:
+           type: object
+           required: true
+           properties:
+              telephone:
+                type: string
+                required: true
+              street:
+                type: string
+                required: true      
+              city:
+                type: string
+                required: true     
+              state:
+                type: string
+                required: true       
+              postalCode:
+                type: string
+                required: true        
+              country:
+                type: string
+                required:  true        
+              isActive:
+                type: boolean | nil
+                required: false

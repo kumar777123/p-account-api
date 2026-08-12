@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<error-handler name="global-error-handling-impl" doc:id="5d9162e7-6bba-4cf1-bbcb-5e0898ae01b1" >
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="0af23e64-a8c6-41bb-bf8e-7acd6199340e" type="${error.types.technical}">
+			<ee:transform doc:name="map technical error" doc:id="b3b9a4df-7850-404e-a9bf-90d27b15efc3" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"errorType": "Technical",
+	"errorCode": error.errorType.namespace ++ ":" ++ error.errorType.identifier,
+	"errorDescription": error.description
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<logger level="ERROR" doc:name="technical error" doc:id="619068c1-ea66-49c0-9485-fd694b8a8de8" message="Technical Error: #[payload]"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="0c65963c-8c20-4a6e-83d0-6cc90dc95eb5" type="${error.types.functional}">
+			<ee:transform doc:name="map functional error" doc:id="8814e9c5-1af1-406c-af5d-ac24a39a603f" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"errorType": "Functional",
+	"errorCode": error.errorType.namespace ++ ":" ++ error.errorType.identifier,
+	"errorDescription": error.description
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<logger level="ERROR" doc:name="functional error" doc:id="ac0076ce-19df-4a1a-8662-012a0ce7f56e" message="Functional Error: #[payload]" />
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="17d507e0-772e-416e-a2c0-9257b7f315ce" type="ANY">
+			<ee:transform doc:name="map functional error" doc:id="4a0ea3e7-9560-4c4b-b2ea-7cf0a216c998" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"errorType": "Generic error",
+	"errorCode": error.errorType.namespace ++ ":" ++ error.errorType.identifier,
+	"errorDescription": error.description
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<logger level="ERROR" doc:name="generic error" doc:id="6c5e4bf2-8ccc-422d-acc8-993dd8f05d3d" message="Generic Error: #[payload]" />
+		</on-error-propagate>
+	</error-handler>
+</mule>

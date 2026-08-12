@@ -1,0 +1,26 @@
+#%RAML 1.0
+title: p-account-api
+version: 1.0
+protocols: [HTTP, HTTPS]
+description: process api for account creation
+
+uses:
+  sf-lib: /libraries/library.raml
+
+traits:
+  client-enforcement: !include /exchange_modules/3777eb28-f168-48e0-832b-71a5ceecc35d/client-id-enforcement-trait/1.0.0/client-id-enforcement-trait.raml
+
+
+/accounts:
+  is: [client-enforcement]
+  post:
+    body:
+      application/json:
+        type: sf-lib.postAccountRequest
+        example: !include /examples/request/postAccountReuest.json
+    responses:
+      201:
+        body:
+          application/json:
+            type: sf-lib.postAccountResponse
+            example: !include /examples/response/postAccountResponce.json

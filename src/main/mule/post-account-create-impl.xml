@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="post-account-create-impl" doc:id="9f0953a6-b68d-45f1-9bf3-cd62861d38b8" >
+		<logger level="INFO" doc:name="start accounts create flow" doc:id="7ec0851d-e83f-46fb-b213-ca190b642764" message="start accounts create flow: #[payload]"/>
+		<ee:transform doc:name="map-request payload" doc:id="80f48fc6-903e-474e-b87c-d8bc75c1660a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+((payload.addressDetails map (value, index) -> {
+    ((value.address filter $.isActive == true) map (val, ind) -> {
+    "Name": payload.name[index],
+    "Phone": val.telephone ,
+    "BillingStreet": val.street ,
+    "BillingCity": val.city ,
+    "BillingState": val.state,
+    "BillingPostalCode": val.postalCode,
+    "BillingCountry": val.country
+    })
+}) filter $ != {})]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="POST" doc:name="call s-oauth-api" doc:id="7b3adb98-8f54-4ae7-b682-c780b8ba4d29" config-ref="HTTP_Request_configuration_s-oauth-api" path="${s.api.token.path}" target="accessToken">
+			<http:headers ><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+"client_id": p('secure::s.account.api.client.id'),
+"client_secret": p('secure::s.account.api.client.secret'),
+"grant_type": p('s.api.grant.type')
+}]]]></http:headers>
+		</http:request>
+		<logger level="INFO" doc:name="get token" doc:id="306014d5-bfa7-42bf-a0d5-db4d1551a572" message="Token details: #[vars.accessToken]"/>
+		<http:request method="POST" doc:name="call s-account-api" doc:id="dde0a32d-7dca-4498-a63f-6a5a49030fe5" path="${s.account.api.path}" config-ref="HTTP_Request_configuration_s-account-api">
+			<http:headers ><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+"client_id": p('secure::s.account.api.client.id'),
+"client_secret": p('secure::s.account.api.client.secret'),
+"Authorization": "Bearer " ++ vars.accessToken.access_token
+}]]]></http:headers>
+		</http:request>
+		<ee:transform doc:name="response mapping" doc:id="c04a68c0-2a89-47ce-94be-f256d04cf330" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{  
+"message": "Account created Successfully",  
+"id": payload.items.id[0] 
+}  ]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="end accounts create flow" doc:id="98d8a958-31ee-4ed3-9961-b1e2fd4a9d06" message="end accounts create flow: #[payload]" />
+	</sub-flow>
+</mule>
