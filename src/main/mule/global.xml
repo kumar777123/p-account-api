@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway"
+	xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
+    <http:listener-config name="p-account-api-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="8081" />
+    </http:listener-config>
+    <apikit:config name="p-account-api-config" api="p-account-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+	<http:request-config name="HTTP_Request_configuration_s-oauth-api" doc:name="HTTP Request configuration" doc:id="4ac34e91-706e-4d0c-81f8-1f20df3f3c62" >
+		<http:request-connection protocol="HTTPS" host="${s.api.token.host}" />
+	</http:request-config>
+	<http:request-config name="HTTP_Request_configuration_s-account-api" doc:name="HTTP Request configuration" doc:id="cc33f172-405a-4f7b-843b-a9cbe5e9918f" >
+		<http:request-connection protocol="HTTPS" host="${s.account.api.host}" />
+	</http:request-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="dd7948cd-d23a-4f53-989a-35e2694702cf" file="properties/${muleEnv}/${muleEnv}.properties" />
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="58397c4f-180d-4e10-b55f-adc29ece1ea6" file="properties/${muleEnv}/${muleEnv}.secure.properties" key="${encriptionkey}" >
+		<secure-properties:encrypt algorithm="Blowfish" />
+	</secure-properties:config>
+	<global-property doc:name="Global Property" doc:id="db87100e-f08b-4614-a10c-e8a0e8517862" name="encriptionkey" value="1234567890123456" />
+	<global-property doc:name="Global Property" doc:id="4ad8bf72-0c3d-4a7c-8ce2-12ac20cb192d" name="muleEnv" value="dev" />
+	<configuration doc:name="Configuration" doc:id="e42e0559-a899-4423-8947-76190d03ca54" defaultErrorHandler-ref="global-error-handling-impl" />
+	<api-gateway:autodiscovery apiId="21059800" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="c07653f6-aed1-429a-b7d9-7e3727e86de6" flowRef="p-account-api-main" />
+</mule>
